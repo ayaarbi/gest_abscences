@@ -33,7 +33,7 @@ class AdminHome extends StatelessWidget {
             isScrollable: true,
             indicatorColor: Colors.white,
             tabs: [
-              Tab(icon: Icon(Icons.school), text: "Étudiants"),
+              Tab(icon: Icon(Icons.school), text: "Etudiants"),
               Tab(icon: Icon(Icons.person), text: "Enseignants"),
               Tab(icon: Icon(Icons.class_), text: "Classes"),
               Tab(icon: Icon(Icons.calendar_today), text: "Séances"),

@@ -50,100 +50,136 @@ class _AbsencesScreenState extends State<AbsencesScreen> {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (_absences.isEmpty) {
-      return RefreshIndicator(
-        onRefresh: _chargerAbsences,
-        child: ListView( // Utilisation d'un ListView pour permettre le pull-to-refresh même si vide
-          children: [
-            SizedBox(height: MediaQuery.of(context).size.height * 0.3),
-            Center(
-              child: Column(
-                children: [
-                  Icon(Icons.verified_user_outlined, size: 80, color: Colors.green.shade200),
-                  const SizedBox(height: 16),
-                  const Text(
-                    "Félicitations !\nAucune absence enregistrée.",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16, color: Colors.grey),
-                  ),
-                ],
+    // --- NOUVEAU : Calcul du total d'absences ---
+    // On filtre la liste pour ne compter que ceux dont le statut est "absent"
+    int totalAbsences = _absences.where((a) => a.statut.toLowerCase() == 'absent').length;
+
+    return Column(
+      children: [
+        // --- NOUVEAU : Le bandeau du total en haut ---
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          color: totalAbsences > 0 ? Colors.red.shade50 : Colors.green.shade50,
+          child: Column(
+            children: [
+              Text(
+                "Total d'absences",
+                style: TextStyle(
+                  fontSize: 14, 
+                  color: totalAbsences > 0 ? Colors.red.shade700 : Colors.green.shade700
+                ),
               ),
-            ),
-          ],
+              const SizedBox(height: 4),
+              Text(
+                "$totalAbsences",
+                style: TextStyle(
+                  fontSize: 24, 
+                  fontWeight: FontWeight.bold, 
+                  color: totalAbsences > 0 ? Colors.red : Colors.green
+                ),
+              ),
+            ],
+          ),
         ),
-      );
-    }
 
-    return RefreshIndicator(
-      onRefresh: _chargerAbsences,
-      child: ListView.builder(
-        padding: const EdgeInsets.all(10),
-        itemCount: _absences.length,
-        itemBuilder: (context, index) {
-          final Absence a = _absences[index];
-          
-          // Logique de couleur basée sur le statut de l'objet
-          final Color statusColor = a.statut.toLowerCase() == 'absent' 
-              ? Colors.red 
-              : Colors.orange;
-
-          return Card(
-            elevation: 1,
-            margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-            child: ListTile(
-              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              leading: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: statusColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(Icons.calendar_today_outlined, color: statusColor),
-              ),
-              title: Text(
-                a.matiere,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
-              ),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 5),
-                  Row(
+        // --- RESTE DU CODE (Exactement le même, enveloppé dans Expanded) ---
+        Expanded(
+          child: _absences.isEmpty
+              ? RefreshIndicator(
+                  onRefresh: _chargerAbsences,
+                  child: ListView( // Utilisation d'un ListView pour permettre le pull-to-refresh même si vide
                     children: [
-                      const Icon(Icons.date_range, size: 14, color: Colors.grey),
-                      const SizedBox(width: 5),
-                      Text(a.dateSeance),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.3),
+                      Center(
+                        child: Column(
+                          children: [
+                            Icon(Icons.verified_user_outlined, size: 80, color: Colors.green.shade200),
+                            const SizedBox(height: 16),
+                            const Text(
+                              "Félicitations !\nAucune absence enregistrée.",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 16, color: Colors.grey),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
-                  Row(
-                    children: [
-                      const Icon(Icons.access_time, size: 14, color: Colors.grey),
-                      const SizedBox(width: 5),
-                      Text("Début : ${a.heureDebut}"),
-                    ],
+                )
+              : RefreshIndicator(
+                  onRefresh: _chargerAbsences,
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(10),
+                    itemCount: _absences.length,
+                    itemBuilder: (context, index) {
+                      final Absence a = _absences[index];
+                      
+                      // Logique de couleur basée sur le statut de l'objet
+                      final Color statusColor = a.statut.toLowerCase() == 'absent' 
+                          ? Colors.red 
+                          : Colors.green;
+
+                      return Card(
+                        elevation: 1,
+                        margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                          leading: Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: statusColor.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Icon(Icons.calendar_today_outlined, color: statusColor),
+                          ),
+                          title: Text(
+                            a.matiere,
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 5),
+                              Row(
+                                children: [
+                                  const Icon(Icons.date_range, size: 14, color: Colors.grey),
+                                  const SizedBox(width: 5),
+                                  Text(a.dateSeance),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  const Icon(Icons.access_time, size: 14, color: Colors.grey),
+                                  const SizedBox(width: 5),
+                                  Text("Début : ${a.heureDebut}"),
+                                ],
+                              ),
+                            ],
+                          ),
+                          trailing: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: statusColor,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              a.statut.toUpperCase(),
+                              style: const TextStyle(
+                                color: Colors.white, 
+                                fontWeight: FontWeight.bold, 
+                                fontSize: 10
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                ],
-              ),
-              trailing: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: statusColor,
-                  borderRadius: BorderRadius.circular(20),
                 ),
-                child: Text(
-                  a.statut.toUpperCase(),
-                  style: const TextStyle(
-                    color: Colors.white, 
-                    fontWeight: FontWeight.bold, 
-                    fontSize: 10
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
-      ),
+        ),
+      ],
     );
   }
 }

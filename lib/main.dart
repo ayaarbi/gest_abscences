@@ -14,7 +14,7 @@ class MainApp extends StatelessWidget {
       title: 'GestAbsence',
       // --- CONFIGURATION DU THÈME ---
       debugShowCheckedModeBanner: false, // Enlever la bande debug
-      useInheritedMediaQuery: true,
+
       
       // Thème Clair (Light Mode)
       theme: ThemeData(

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../services/api_service.dart';
-import '../../models/seance.dart';   // Import du modèle Seance
-import '../../models/etudiant.dart'; // Import du modèle Etudiant
+import '../../models/seance.dart';
+import '../../models/etudiant.dart';
 
 class AppelScreen extends StatefulWidget {
-  // Le constructeur accepte maintenant l'objet Seance typé
-  final Seance seance; 
+  final Seance seance; // Reçoit la séance sélectionnée
+
   const AppelScreen({super.key, required this.seance});
 
   @override
@@ -13,11 +13,11 @@ class AppelScreen extends StatefulWidget {
 }
 
 class _AppelScreenState extends State<AppelScreen> {
-  // Utilisation du modèle Etudiant pour la liste
   List<Etudiant> _etudiants = [];
-  Map<int, String> _presences = {}; 
-  bool _saving = false;
+  // Map pour stocker l'état de présence : id_etudiant -> true (présent) / false (absent)
+  Map<int, bool> _presences = {}; 
   bool _isLoading = true;
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -25,112 +25,125 @@ class _AppelScreenState extends State<AppelScreen> {
     _chargerEtudiants();
   }
 
+  // 1. Charger uniquement les étudiants de la classe concernée
   void _chargerEtudiants() async {
-    // ApiService.getEtudiants() retourne maintenant une List<Etudiant>
-    final data = await ApiService.getEtudiants(); 
+    // Note : s'assurer que widget.seance.classeId existe (voir note en bas)
+    final data = await ApiService.getEtudiantsParClasse(widget.seance.classeId);
+    
     setState(() {
       _etudiants = data;
       for (var e in data) {
-        // e.id est déjà un int dans le modèle Etudiant
-        _presences[e.id] = 'present'; 
+        _presences[e.id] = true; // Par défaut, tout le monde est présent
       }
       _isLoading = false;
     });
   }
 
-  void _valider() async {
-    setState(() => _saving = true);
+  // 2. Valider et envoyer l'appel au serveur
+  void _validerLAppel() async {
+    setState(() => _isSaving = true);
+
+    // Préparation des données pour POST /enseignant/absences.php
     List<Map<String, dynamic>> listeAppel = [];
-    
-    _presences.forEach((id, statut) {
-      listeAppel.add({"etudiant_id": id, "statut": statut});
+    _presences.forEach((id, isPresent) {
+      listeAppel.add({
+        "etudiant_id": id,
+        "statut": isPresent ? 'present' : 'absent'
+      });
     });
 
-    // widget.seance.id est utilisé directement (c'est un int)
     final res = await ApiService.soumettreAppel(widget.seance.id, listeAppel);
-    
+
+    setState(() => _isSaving = false);
+
     if (res['success'] == 1) {
+      // 3. Affichage du SnackBar de succès
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Appel enregistré avec succès !"), backgroundColor: Colors.green),
+        const SnackBar(
+          content: Text("✅ Appel enregistré avec succès !"),
+          backgroundColor: Colors.green,
+        ),
       );
-      Navigator.pop(context);
+      Navigator.pop(context); // Retour à la liste des séances
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Erreur : ${res['message']}"), backgroundColor: Colors.red),
+        SnackBar(
+          content: Text("❌ Erreur : ${res['message']}"),
+          backgroundColor: Colors.red,
+        ),
       );
     }
-    setState(() => _saving = false);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Appel : ${widget.seance.matiere}"),
+        // On remplace le simple Text par une Column
+        title: Column(
+          crossAxisAlignment:
+              CrossAxisAlignment.start, // Aligne le texte à gauche
+          children: [
+            Text("Appel : ${widget.seance.matiere}"),
+            Text(
+              "Classe : ${widget.seance.classe}",
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.normal,
+              ), // Plus petit pour faire "sous-titre"
+            ),
+          ],
+        ),
         backgroundColor: Colors.indigo,
         foregroundColor: Colors.white,
       ),
-      body: _isLoading 
-        ? const Center(child: CircularProgressIndicator())
-        : Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(15),
-                color: Colors.indigo.withOpacity(0.05),
-                child: Row(
+
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _etudiants.isEmpty
+              ? const Center(child: Text("Aucun étudiant dans cette classe."))
+              : Column(
                   children: [
-                    const Icon(Icons.people, color: Colors.indigo),
-                    const SizedBox(width: 10),
-                    Text(
-                      "Liste des étudiants (${_etudiants.length})",
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: _etudiants.length,
-                  itemBuilder: (context, index) {
-                    final e = _etudiants[index];
-                    final isPresent = _presences[e.id] == 'present';
-                    
-                    return ListTile(
-                      title: Text("${e.nom} ${e.prenom}", style: const TextStyle(fontWeight: FontWeight.w500)),
-                      subtitle: Text(e.classe),
-                      trailing: ChoiceChip(
-                        label: Text(isPresent ? "Présent" : "Absent"),
-                        selected: isPresent,
-                        selectedColor: Colors.green.shade100,
-                        checkmarkColor: Colors.green,
-                        onSelected: (val) {
-                          setState(() => _presences[e.id] = val ? 'present' : 'absent');
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: _etudiants.length,
+                        itemBuilder: (context, index) {
+                          final e = _etudiants[index];
+                          return CheckboxListTile(
+                            title: Text("${e.nom} ${e.prenom}"),
+                            subtitle: Text(_presences[e.id]! ? "Présent" : "Absent"),
+                            secondary: const Icon(Icons.person),
+                            activeColor: Colors.green,
+                            value: _presences[e.id],
+                            onChanged: (bool? value) {
+                              setState(() {
+                                _presences[e.id] = value ?? false;
+                              });
+                            },
+                          );
                         },
                       ),
-                    );
-                  },
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.indigo,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))
                     ),
-                    onPressed: _saving ? null : _valider,
-                    child: _saving 
-                      ? const CircularProgressIndicator(color: Colors.white) 
-                      : const Text("VALIDER L'APPEL", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                  ),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.indigo,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))
+                          ),
+                          onPressed: _isSaving ? null : _validerLAppel,
+                          child: _isSaving 
+                            ? const CircularProgressIndicator(color: Colors.white)
+                            : const Text("VALIDER L'APPEL", style: TextStyle(fontWeight: FontWeight.bold)),
+                        ),
+                      ),
+                    )
+                  ],
                 ),
-              ),
-            ],
-          ),
     );
   }
 }

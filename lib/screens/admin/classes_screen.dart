@@ -24,8 +24,7 @@ class _ClassesScreenState extends State<ClassesScreen> {
             TextField(controller: _niveauCtrl, decoration: const InputDecoration(labelText: "Niveau")),
           ],
         ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Annuler")),
+        actions: [  
           ElevatedButton(
             onPressed: () async {
               final res = await ApiService.ajouterClasse(_nomCtrl.text, _niveauCtrl.text);
@@ -37,6 +36,7 @@ class _ClassesScreenState extends State<ClassesScreen> {
             },
             child: const Text("Ajouter"),
           ),
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Annuler")),
         ],
       ),
     );
