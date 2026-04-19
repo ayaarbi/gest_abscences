@@ -70,7 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               const Icon(Icons.school, size: 80, color: Colors.indigo),
               const SizedBox(height: 16),
-              Text('GestAbsence', style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold)),
+              Text('Gestion d\'Absence', style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold)),
               const SizedBox(height: 40),
               TextField(
                 controller: _emailCtrl,

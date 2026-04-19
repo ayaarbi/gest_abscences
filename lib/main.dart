@@ -16,61 +16,44 @@ class MainApp extends StatelessWidget {
       debugShowCheckedModeBanner: false, // Enlever la bande debug
 
       
-      // Thème Clair (Light Mode)
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.indigo,
-          brightness: Brightness.light,
-        ),
-        appBarTheme: const AppBarTheme(
-          centerTitle: true,
-          backgroundColor: Colors.indigo,
-          foregroundColor: Colors.white,
-          elevation: 2,
-        ),
-        // CORRECTION ICI : Utilisation de CardThemeData
-        cardTheme: CardThemeData(
-          elevation: 2,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          clipBehavior: Clip.antiAlias, // Pour que le contenu ne dépasse pas des bords arrondis
-        ),
-        // Style des boutons
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.indigo,
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          ),
-        ),
-        // Style des champs de saisie
-        inputDecorationTheme: InputDecorationTheme(
-          filled: true,
-          fillColor: Colors.grey[50],
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        ),
-      ),
+      // --- Thème Clair ---
+theme: ThemeData(
+  useMaterial3: true,
+  colorScheme: ColorScheme.fromSeed(
+    seedColor: Colors.indigo,
+    brightness: Brightness.light,
+  ),
+  // Force le texte à utiliser les couleurs du ColorScheme
+  textTheme: const TextTheme(
+    bodyLarge: TextStyle(color: Colors.black87),
+    bodyMedium: TextStyle(color: Colors.black54),
+  ),
+  appBarTheme: const AppBarTheme(
+    centerTitle: true,
+    backgroundColor: Colors.indigo,
+    foregroundColor: Colors.white,
+  ),
+),
 
-      // Thème Sombre (Dark Mode)
-      darkTheme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.indigo,
-          brightness: Brightness.dark,
-        ),
-        appBarTheme: const AppBarTheme(
-          centerTitle: true,
-          elevation: 0,
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            minimumSize: const Size(double.infinity, 50),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          ),
-        ),
-      ),
+// --- Thème Sombre ---
+darkTheme: ThemeData(
+  useMaterial3: true,
+  colorScheme: ColorScheme.fromSeed(
+    seedColor: Colors.indigo,
+    brightness: Brightness.dark,
+    // Optionnel : tu peux ajuster la couleur de surface si c'est trop sombre
+    surface: const Color(0xFF1E1E1E), 
+  ),
+  textTheme: const TextTheme(
+    bodyLarge: TextStyle(color: Colors.white),
+    bodyMedium: TextStyle(color: Colors.white70),
+  ),
+  appBarTheme: const AppBarTheme(
+    centerTitle: true,
+    backgroundColor: Color(0xFF121212),
+    foregroundColor: Colors.white,
+  ),
+),
 
       // Mode de thème par défaut (suit le système du téléphone)
       themeMode: ThemeMode.system, 

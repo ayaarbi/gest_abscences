@@ -20,7 +20,7 @@ class AdminHome extends StatelessWidget {
       length: 4,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Administration GestAbsence"),
+          title: const Text("Administration Gestion d'Absence"),
           backgroundColor: Colors.indigo,
           foregroundColor: Colors.white,
           actions: [
