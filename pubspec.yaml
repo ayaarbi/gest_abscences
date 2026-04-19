@@ -4,14 +4,13 @@ publish_to: 'none'
 version: 0.1.0
 
 environment:
-  sdk: ^3.10.8
+  sdk: ^3.10.7
 
 dependencies:
   flutter:
     sdk: flutter
-  http: ^1.6.0
-  intl: ^0.20.2
-  shared_preferences: ^2.5.5
+  http: ^1.2.0              # appels API REST
+  shared_preferences: ^2.2.2 # sauvegarde session utilisateur
 
 dev_dependencies:
   flutter_test:

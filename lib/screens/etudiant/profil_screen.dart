@@ -37,7 +37,7 @@ class _ProfilScreenState extends State<ProfilScreen> {
       });
     }
   } catch (e) {
-    print("Erreur de décodage : $e"); // TRÈS IMPORTANT : regardez votre console
+    print("Erreur de décodage : $e"); 
     if (mounted) {
       setState(() => _isLoading = false);
     }
@@ -69,7 +69,6 @@ class _ProfilScreenState extends State<ProfilScreen> {
                       // Détails du profil
                       Card(
                         elevation: 0,
-                        color: Colors.grey.shade50,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                           side: BorderSide(color: Colors.grey.shade200),
@@ -90,8 +89,6 @@ class _ProfilScreenState extends State<ProfilScreen> {
                       
                       const SizedBox(height: 50),
                       
-                      // Bouton de déconnexion
-                      _buildLogoutButton(),
                     ],
                   ),
                 ),
@@ -108,11 +105,6 @@ class _ProfilScreenState extends State<ProfilScreen> {
               radius: 55,
               backgroundColor: Colors.indigo.shade50,
               child: const Icon(Icons.person, size: 60, color: Colors.indigo),
-            ),
-            const CircleAvatar(
-              radius: 18,
-              backgroundColor: Colors.white,
-              child: Icon(Icons.verified, color: Colors.blue, size: 20),
             ),
           ],
         ),
@@ -151,24 +143,6 @@ class _ProfilScreenState extends State<ProfilScreen> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildLogoutButton() {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton.icon(
-        onPressed: _logout,
-        icon: const Icon(Icons.logout_rounded),
-        label: const Text("DÉCONNEXION"),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.red.shade50,
-          foregroundColor: Colors.red,
-          elevation: 0,
-          padding: const EdgeInsets.symmetric(vertical: 15),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        ),
-      ),
     );
   }
 }

@@ -11,6 +11,7 @@ class EnseignantHome extends StatefulWidget {
 
 class _EnseignantHomeState extends State<EnseignantHome> {
   String _nom = "";
+  String _prenom = "";
 
   @override
   void initState() {
@@ -23,6 +24,7 @@ class _EnseignantHomeState extends State<EnseignantHome> {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       _nom = prefs.getString('nom') ?? "Enseignant";
+      _prenom = prefs.getString('prenom') ?? "Enseignant";
     });
   }
 
@@ -39,7 +41,7 @@ class _EnseignantHomeState extends State<EnseignantHome> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Bonjour, $_nom"),
+        title: Text("Bonjour, $_nom $_prenom"),
         centerTitle: false, // Aligné à gauche pour un look moderne
         backgroundColor: Colors.indigo,
         foregroundColor: Colors.white,

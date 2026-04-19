@@ -4,6 +4,8 @@ class Etudiant {
   final String prenom;
   final String email;
   final String classe;
+  final int classeId;
+  
 
   Etudiant({
     required this.id,
@@ -11,6 +13,7 @@ class Etudiant {
     required this.prenom,
     required this.email,
     required this.classe,
+    required this.classeId,
   });
 
   // lib/models/etudiant.dart
@@ -23,6 +26,7 @@ factory Etudiant.fromJson(Map<String, dynamic> json) {
     email: json['email']?.toString() ?? '',
     // Si votre PHP n'envoie pas 'classe', mettez une valeur par défaut
     classe: json['classe']?.toString() ?? json['nom_classe']?.toString() ?? 'N/A',
+    classeId: int.tryParse(json['classe_id'].toString()) ?? 0,
   );
 }
 }

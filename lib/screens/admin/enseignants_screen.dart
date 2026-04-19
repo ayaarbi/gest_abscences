@@ -37,7 +37,6 @@ class _EnseignantsScreenState extends State<EnseignantsScreen> {
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("Annuler")),
           ElevatedButton(
             onPressed: () async {
               Map<String, dynamic> data = {"nom": _nom.text, "prenom": _prenom.text, "email": _email.text, "specialite": _spec.text};
@@ -47,7 +46,8 @@ class _EnseignantsScreenState extends State<EnseignantsScreen> {
               if (res['success'] == 1) { Navigator.pop(ctx); setState(() {}); }
             },
             child: const Text("Valider"),
-          )
+          ),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("Annuler")),
         ],
       ),
     );

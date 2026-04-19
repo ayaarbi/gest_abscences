@@ -162,5 +162,32 @@ class ApiService {
     return [];
   }
 
+  // --- ADMINISTRATION : MATIÈRES ---
+  static Future<List<dynamic>> getMatieres() async {
+    try {
+      final response = await http.get(Uri.parse(Api.adminMatieres)); // Assure-toi d'avoir cette route dans ApiConfig !
+      final data = jsonDecode(response.body);
+      return data['success'] == 1 ? data['data'] : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  // --- Dans api_service.dart ---
+static Future<List<Etudiant>> getEtudiantsParClasse(int classeId) async {
+  try {
+    // On ajoute le paramètre ?classe_id= à l'URL
+    final response = await http.get(Uri.parse("${Api.adminEtudiants}?classe_id=$classeId"));
+    final data = jsonDecode(response.body);
+    if (data['success'] == 1) {
+      List list = data['data'];
+      return list.map((item) => Etudiant.fromJson(item)).toList();
+    }
+  } catch (e) { 
+    print("Erreur getEtudiantsParClasse: $e"); 
+  }
+  return [];
+}
+
   
 }

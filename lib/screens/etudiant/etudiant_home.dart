@@ -43,8 +43,6 @@ class EtudiantHome extends StatelessWidget {
           ),
         ),
         body: const TabBarView(
-          // Rappel : ProfilScreen et AbsencesScreen utilisent maintenant 
-          // les modèles Etudiant et Absence pour l'affichage.
           children: [
             ProfilScreen(),
             AbsencesScreen(),

@@ -1,6 +1,7 @@
 // lib/config/api_config.dart
 
 const String baseUrl = 'http://localhost/gest_absence_api';
+//const String baseUrl = 'http://192.168.1.11/gest_absence_api';
 
 class Api {
   static const Map<String, String> headers = {
@@ -15,6 +16,7 @@ class Api {
   static const String adminEnseignants = '$baseUrl/admin/enseignants.php';
   static const String adminClasses     = '$baseUrl/admin/classes.php';
   static const String adminSeances     = '$baseUrl/admin/seances.php';
+  static const String adminMatieres     = '$baseUrl/admin/matieres.php';
 
   // -- Enseignant --
   static String enseignantSeances(int userId) => '$baseUrl/enseignant/seances.php?id=$userId';
